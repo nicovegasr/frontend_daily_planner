@@ -32,7 +32,8 @@ const Login = () => {
             'password': userPwd,
           })
         };
-        const result = await (await fetch(`http://localhost:4000/user/login`, options));
+        const externalurl = "https://frantic-gold-bonobo.cyclic.app/"
+        const result = await (await fetch(`${externalurl}user/login`, options));
         const status = result.status;
         if (status === 200) {
           const token = await result.json();

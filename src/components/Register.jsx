@@ -24,7 +24,8 @@ const Register = () => {
     if (registerUsername === '' || registerPwd === '')
       alert("Porfavor rellene los campos de usuario y contraseñas.");
     else {
-      fetch('http://localhost:4000/user', {
+      const externalurl = "https://frantic-gold-bonobo.cyclic.app/"
+      fetch(`${externalurl}user`, {
         method: 'POST',
         body: new URLSearchParams({
           'name': registerUsername,

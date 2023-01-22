@@ -21,6 +21,7 @@ const SessionForm = () => {
   const user = useSelector(selectUser);
   const username = user && user.userName;
   const token = user && user.token;
+  const externalurl = "https://frantic-gold-bonobo.cyclic.app/"
 
   // const dispatch = useDispatch();
 
@@ -64,7 +65,7 @@ const SessionForm = () => {
       return;
     } else {
       // Hacemos un GET para tener el usuario guardado en la base de datos ya que necesitamos su _id.
-      let url = `http://localhost:4000/user/?token=${token}&name=${username}`;
+      let url = `${externalurl}user/?token=${token}&name=${username}`;
       let realUser = await fetch(url)
       realUser = await realUser.json()
 
@@ -76,11 +77,11 @@ const SessionForm = () => {
           'token': token,
         })
       };
-      url = `http://localhost:4000/session/`;
+      url = `${externalurl}session/`;
       await fetch(url, options);
 
       // Ahora tenemos que obtener la id de la session que creamos en la base de datos, para ello primero haremos un get
-      url = `http://localhost:4000/session/?token=${token}&name=${session}&user=${realUser._id}`;
+      url = `${externalurl}session/?token=${token}&name=${session}&user=${realUser._id}`;
       let realSession = await fetch(url);
       realSession = await realSession.json();
       // Este Get devuelve un array con las sesiones que coincidan, en caso de que un usuario tenga varias sesiones con el mismo nombre
@@ -89,7 +90,7 @@ const SessionForm = () => {
       // Ahora que tenemos la session actual que queremos guardar, con su ID podemos hacer el POST de los objetivos.
       objectives.forEach(async (element) => {
         // Posteamos objetivos con las id de la sesion correspondiente
-        url = `http://localhost:4000/objective/`;
+        url = `${externalurl}objective/`;
         options = {
           method: "POST", body: new URLSearchParams({
             'name': element.name,
@@ -100,14 +101,14 @@ const SessionForm = () => {
         await fetch(url, options);
         // Ahora tenemos que hacer un POST de las tareas correspondientes a cada object, para esto lo que haremos será un GET teniendo en cuenta
         // nuevamente que nos quedamos con el ultimo objetivo que será el actual.
-        url = `http://localhost:4000/objective/?token=${token}&name=${element.name}&session=${realSession._id}`;
+        url = `${externalurl}objective/?token=${token}&name=${element.name}&session=${realSession._id}`;
         let realObjective = await fetch(url);        
         realObjective = await realObjective.json()
         // Nos quedaremos con el ultimo objetivo añadido que es el que nos interesa porque iremos iterando uno a uno.
         realObjective = realObjective[realObjective.length-1]
         // Ahora podemos hacer un POST de las tareas teniendo nuestro objetivo de interés.
         element.tasks.forEach( async(element) => {
-          url = `http://localhost:4000/task/`;
+          url = `${externalurl}task/`;
           options = {
             method: "POST", body: new URLSearchParams({
               'name': element,

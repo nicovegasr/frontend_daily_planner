@@ -19,8 +19,9 @@ const PreviousSession = () => {
   
   useEffect(() => {
     async function fetchData() {
+      const externalurl = "https://frantic-gold-bonobo.cyclic.app/"
       if (username === null) return navigate("/")
-      let url = `http://localhost:4000/user/?token=${token}&name=${username}`;
+      let url = `${externalurl}user/?token=${token}&name=${username}`;
       let realUser = await fetch(url);
       realUser = await realUser.json();
 
@@ -29,21 +30,23 @@ const PreviousSession = () => {
       const sessions = realUser.sessions.map(async (element) => {
         // Creamos un objeto que sera la sesion
         let newSession = { name: '', objectives: [], num_tasks: 1 }
-        url = `http://localhost:4000/session/id/?token=${token}&id=${element}`;
+        url = `${externalurl}session/id/?token=${token}&id=${element}`;
         const getSession = await fetch(url)
         const realSession = await getSession.json()
         // Obtnemos la sesion y ponemos el nombre
         newSession.name = realSession.name
         const objectives = await Promise.all(realSession.objectives.map(async (el) => {
-          url = `http://localhost:4000/objective/id/?token=${token}&id=${el}`;
+          url = `${externalurl}objective/id/?token=${token}&id=${el}`;
           const getObjective = await fetch(url)
           return await getObjective.json();
         }));
-        
+        let count = 0
         objectives.forEach((realObjective) => {
           newSession.objectives.push(realObjective.name);
-          newSession.num_tasks = realObjective.tasks.length
+          console.log(realObjective)
+          count += realObjective.tasks.length
         });
+        newSession.num_tasks = count;
         
         return newSession;
       });
